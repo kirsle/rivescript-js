@@ -21,6 +21,7 @@ class Brain
     @master = master
     @strict = master._strict
     @utf8   = master._utf8
+    @caseSensitive = master._caseSensitive
 
     # Private variables only relevant to the reply-answering part of RiveScript.
     @_currentUser = null # The current user asking for a message
@@ -347,7 +348,7 @@ class Brain
             @say "Try to match lastReply (#{lastReply}) to #{botside}"
 
             # Match?
-            match = lastReply.match(new RegExp("^#{botside}$"))
+            match = lastReply.match(new RegExp("^#{botside}$", 'i'))
             if match
               # Huzzah! See if OUR message is right too.
               @say "Bot side matched!"
@@ -401,7 +402,7 @@ class Brain
             isMatch = true
         else
           # Non-atomic triggers always need the regexp.
-          match = msg.match(new RegExp("^#{regexp}$"))
+          match = msg.match(new RegExp("^#{regexp}$", 'i'))
           if match
             # The regexp matched!
             isMatch = true
@@ -585,7 +586,8 @@ class Brain
   formatMessage: (msg, botreply) ->
     # Lowercase it.
     msg = "" + msg
-    msg = msg.toLowerCase()
+    unless @caseSensitive is true
+      msg = msg.toLowerCase()
 
     # Run substitutions and sanitize what's left.
     msg = @substitute(msg, "sub")
